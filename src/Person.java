@@ -1,3 +1,4 @@
+import java.util.Objects;
 import java.util.Random;
 
 public class Person {
@@ -5,7 +6,7 @@ public class Person {
         Random rn = new Random();
         currentFloor = rn.nextInt(numberOfFloors) + 1;
         targetFloor = rn.nextInt(numberOfFloors) + 1;
-        if (currentFloor == targetFloor) //if they happen to be the same, reroll the targetfloor
+        if (Objects.equals(currentFloor, targetFloor)) //if they happen to be the same, reroll the targetfloor
             targetFloor = rn.nextInt(numberOfFloors) + 1;
         id = "Person #" + (index + 1);
         priority = (index + 1); //used to resolve call requests in order
@@ -29,7 +30,7 @@ public class Person {
 
     public Elevator.Direction GetDirection()
     {
-        Elevator.Direction retVal = Elevator.Direction.Idle;
+        Elevator.Direction retVal;
         if (currentFloor > targetFloor)
             retVal = Elevator.Direction.Down;
         else

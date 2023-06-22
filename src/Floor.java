@@ -5,9 +5,9 @@ import java.util.List;
 public class Floor { //this class might be unnecessary
     public Floor(int floorNum) {
         floorNumber = floorNum;
-        People = new ArrayList<Person>();
+        People = new ArrayList<>();
 
-        Calls = new ArrayList<Elevator.Direction>();
+        Calls = new ArrayList<>();
     }
 
     //Properties
@@ -21,7 +21,7 @@ public class Floor { //this class might be unnecessary
         Calls.add(direction);
         Main.getMyBuilding().FloorCallQueue.add(new FloorQueue(floorNumber, direction));
         //add trigger here to call the closest empty elevator, in the order the calls were made.
-        CallIdleElevator(direction);
+        CallIdleElevator();
     }
 
     public void RemoveFloorCall(Elevator.Direction direction){
@@ -31,21 +31,20 @@ public class Floor { //this class might be unnecessary
 
     public Boolean IsCalled()
     {
-        return Calls.stream().count() > 0;
+        return (long) Calls.size() > 0;
     }
 
     public boolean IdleElevatorDispatchedToFloor(){
-        boolean retVal = false;
+        boolean retVal;
         //checks the elevators for an empty one headed for this floor.
-        retVal = Main.getMyBuilding().Elevators.stream().filter(elevator -> elevator.IsEmpty() && elevator.destinationFloors.contains(floorNumber)).count() > 0;
+        retVal = Main.getMyBuilding().Elevators.stream().anyMatch(elevator -> elevator.IsEmpty() && elevator.destinationFloors.contains(floorNumber));
 
         return retVal;
     }
 
-    public void CallIdleElevator(Elevator.Direction direction) {//method used to call an available elevator to a given floor to travel in a given direction
+    public void CallIdleElevator() {//method used to call an available elevator to a given floor to travel in a given direction
         //determine which elevator
         //add to the elevator queue
-        //need to add logic to stop a second+ idle elevator from being called
 
         if (Main.getMyBuilding().HasIdleElevators() && !IdleElevatorDispatchedToFloor()) {
             //attempt to call the closest idle elevator to this floor
@@ -58,7 +57,7 @@ public class Floor { //this class might be unnecessary
                 closestEle.directionMoving = Elevator.Direction.Down;
             else if (closestEle.currentFloor < floorNumber)
                 closestEle.directionMoving = Elevator.Direction.Up;
-            else if (closestEle.currentFloor == floorNumber)
+            else if (closestEle.currentFloor.equals(floorNumber))
                 closestEle.directionMoving = Elevator.Direction.Stopped;
 
             if (Main.getShowDetailedLogging()) {
@@ -70,8 +69,8 @@ public class Floor { //this class might be unnecessary
         }
     }
     public Elevator FindClosestIdleElevator(){
-        Elevator retVal = null;
-        retVal = Main.getMyBuilding().Elevators.stream().filter(elevator -> elevator.IsIdle()).min(Comparator.comparingInt(i -> Math.abs(floorNumber - i.currentFloor))).get();
+        Elevator retVal;
+        retVal = Main.getMyBuilding().Elevators.stream().filter(Elevator::IsIdle).min(Comparator.comparingInt(i -> Math.abs(floorNumber - i.currentFloor))).get();
 
         return retVal;
     }

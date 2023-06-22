@@ -1,4 +1,4 @@
-import java.util.Scanner;
+import java.util.Objects;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -30,8 +30,6 @@ public class Main {
         System.out.println("Welcome To The Elevator Simulator");
 
         SetConfigProperties();
-
-        Scanner reader = new Scanner(System.in);  // Reading from System.in
 
         //log extra details
         if (showDetailedLogging) {
@@ -101,11 +99,11 @@ public class Main {
         AtomicBoolean retVal = new AtomicBoolean(true);
 
         //all elevators have to be empty first
-        if (myBuilding.Elevators.stream().filter(elevator -> !elevator.People.isEmpty()).count() == 0) {
+        if (myBuilding.Elevators.stream().allMatch(elevator -> elevator.People.isEmpty())) {
             //all people have to be at their target floor
             myBuilding.Floors.forEach(floor -> {
                 for (Person person : floor.People) {
-                    if (person.currentFloor != person.targetFloor) {
+                    if (!Objects.equals(person.currentFloor, person.targetFloor)) {
                         retVal.set(false);
                         break;
                     }
@@ -136,14 +134,14 @@ public class Main {
         Floor floor;
         String namesString;
         AtomicReference<String> elevatorsString = new AtomicReference<>("");
-        for (int i = (int) myBuilding.Floors.stream().count() - 1; i >= 0 ; i--) {
+        for (int i = myBuilding.Floors.size() - 1; i >= 0 ; i--) {
             floor = myBuilding.Floors.get(i);
             System.out.print("Floor " + floor.floorNumber);
             namesString = floor.People.stream().flatMap(person -> Stream.of(person.id + " Dest: " + person.targetFloor)).collect(Collectors.joining(" "));
             Floor finalFloor = floor;
             elevatorsString.set("");
             myBuilding.Elevators.forEach(elevator -> {
-                if (elevator.currentFloor == finalFloor.floorNumber)
+                if (Objects.equals(elevator.currentFloor, finalFloor.floorNumber))
                     elevatorsString.set(elevator.id);
             });
             System.out.println(" [" + namesString + "]{" + elevatorsString + "}");

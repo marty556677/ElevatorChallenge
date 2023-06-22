@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -10,8 +11,8 @@ public class Elevator {
         Random rn = new Random();
         currentFloor = rn.nextInt(numberOfFloors) + 1; //decision to randomize elevator starting floor
         directionMoving = Direction.Idle;
-        destinationFloors = new ArrayList<Integer>();
-        People = new ArrayList<Person>();
+        destinationFloors = new ArrayList<>();
+        People = new ArrayList<>();
         id = "Elevator #"+(index + 1);
 
         //testing code
@@ -33,7 +34,7 @@ public class Elevator {
     public List<Person> People;
     public enum Direction
     {
-        Up, Down, Idle, Stopped;
+        Up, Down, Idle, Stopped
     }
 
     //Methods
@@ -53,7 +54,7 @@ public class Elevator {
         //if current floor is a destination floor for this elevator, transfer that person (out or in)
         if (destinationFloors.contains(floor.floorNumber)) {
             //if a person in the elevator has this as their destination, unload them and clear destination
-            if (floor.IsCalled() && (/* floor.Calls.contains(directionMoving) ||*/ People.stream().count() == 0)){
+            if (floor.IsCalled() && (/* floor.Calls.contains(directionMoving) ||*/ (long) People.size() == 0)){
                 //this is the "pickup" scenario
 
                 //always use the first call in the floor list
@@ -65,7 +66,7 @@ public class Elevator {
                 floor.RemoveFloorCall(directionMoving);
 
                 //transfer people in from the floor who want to go in the same direction the elevator is already moving
-                List<Person> peopleToTransfer = floor.People.stream().filter(person -> person.GetDirection() == directionMoving).collect(Collectors.toList());
+                List<Person> peopleToTransfer = floor.People.stream().filter(person -> person.GetDirection() == directionMoving).toList();
                 People.addAll(peopleToTransfer);
                 floor.People.removeAll(peopleToTransfer);
 
@@ -83,8 +84,8 @@ public class Elevator {
             }
 
             //This is the "drop off" scenario
-            if (People.stream().filter(person -> person.targetFloor == floor.floorNumber).count() > 0){
-                List<Person> peopleToTransfer = People.stream().filter(person -> person.targetFloor == floor.floorNumber).collect(Collectors.toList());
+            if (People.stream().anyMatch(person -> Objects.equals(person.targetFloor, floor.floorNumber))){
+                List<Person> peopleToTransfer = People.stream().filter(person -> Objects.equals(person.targetFloor, floor.floorNumber)).toList();
                 floor.People.addAll(peopleToTransfer);
                 People.removeAll(peopleToTransfer);
                 destinationFloors.remove(floor.floorNumber);
@@ -94,7 +95,7 @@ public class Elevator {
                     System.out.println(id + " Drop off of " + peeps + " on floor " + currentFloor);
                 }
 
-                if (destinationFloors.stream().count() == 0){
+                if ((long) destinationFloors.size() == 0){
                     directionMoving = Direction.Idle;
                     if (Main.getShowDetailedLogging())
                         System.out.println(id + " went Idle on floor " + currentFloor);
@@ -102,7 +103,7 @@ public class Elevator {
             }
             else if (floor.IsCalled() && floor.Calls.contains(directionMoving) && !destinationFloors.isEmpty()){
                 //this is the scenario where the elevator is moving to a floor with a person in it, it needs to check each floor it comes to for a person wanting to go the same direction.
-                List<Person> peopleToTransfer = floor.People.stream().filter(person -> person.GetDirection() == directionMoving).collect(Collectors.toList());
+                List<Person> peopleToTransfer = floor.People.stream().filter(person -> person.GetDirection() == directionMoving).toList();
                 People.addAll(peopleToTransfer);
                 floor.People.removeAll(peopleToTransfer);
 
