@@ -1,0 +1,23 @@
+Elevator Simulator Specification
+
+Configurable items (config.properties):
+    numberOfFloors: the starting number of floors in the building.
+    numberOfElevators: the starting number of elevators in the building.
+    numberOfPeople: the starting number of people.
+    cycleDelayInMilliseconds: the milliseconds delay for each iteration of the main cycle loop, used to slow the simulation down to mimic reality.
+    detailedLogging: true/false, used to trigger detailed console logging that shows the progress of the simulation.
+
+Start State:
+    Each person starts on a random floor, with a random target floor.
+    Each elevator starts in an idle state on a random floor.
+    Each person calls to their floor in the direction they want to go, taking turns based on their initial index. It happens outside the main loop.
+
+End State:
+    The simulator ends when all people have attained their target floor.
+
+Things that could be improved:
+    1. A UI that shows the progress of the simulator rather then using the console.
+    2. Along with the UI, a way to input the configurable items from the user.
+    3. Implement a way to delay the floor calling that happens in the initial setup, to more closely mimic reality.
+    4. Add maximum capacity handling for elevators.
+    5. Add subtypes to the elevators or people that could add special properties that would somehow change the basic functionality.
