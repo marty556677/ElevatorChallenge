@@ -82,9 +82,7 @@ public class Building {
 
     public void ElevatorsFloorCheck()
     {
-        Elevators.stream().filter(elevator -> (long) elevator.destinationFloors.size() > 0).forEach(elevator -> {
-            elevator.FloorCheck(Floors.stream().filter(floor -> Objects.equals(floor.floorNumber, elevator.currentFloor)).findFirst().get());
-        });
+        Elevators.stream().filter(elevator -> (long) elevator.destinationFloors.size() > 0).forEach(elevator -> elevator.FloorCheck(Floors.stream().filter(floor -> Objects.equals(floor.floorNumber, elevator.currentFloor)).findFirst().get()));
     }
 
     public Integer NumberOfFloors; //perhaps config this
